@@ -3,13 +3,9 @@ package transition
 import (
 	"context"
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"github.com/opentracing/opentracing-go"
 	"strings"
-
-	"github.com/jinzhu/gorm"
-	"github.com/qor/admin"
-	"github.com/qor/qor/resource"
-	"github.com/qor/roles"
 )
 
 // Transition is a struct, embed it in your struct to enable state machine for the struct
@@ -216,29 +212,4 @@ func (transition *EventTransition) Before(fc func(value interface{}, tx *gorm.DB
 func (transition *EventTransition) After(fc func(value interface{}, tx *gorm.DB, ctx context.Context) error) *EventTransition {
 	transition.afters = append(transition.afters, fc)
 	return transition
-}
-
-// ConfigureQorResource used to configure transition for qor admin
-func (transition *Transition) ConfigureQorResource(res resource.Resourcer) {
-	if res, ok := res.(*admin.Resource); ok {
-		if meta := res.GetMeta("State"); meta.Permission == nil {
-			meta.Permission = roles.Deny(roles.Update, roles.Anyone).Deny(roles.Create, roles.Anyone)
-		}
-
-		res.OverrideIndexAttrs(func() {
-			res.IndexAttrs(res.IndexAttrs(), "-StateChangeLogs")
-		})
-
-		res.OverrideShowAttrs(func() {
-			res.ShowAttrs(res.ShowAttrs(), "-StateChangeLogs")
-		})
-
-		res.OverrideNewAttrs(func() {
-			res.NewAttrs(res.NewAttrs(), "-StateChangeLogs")
-		})
-
-		res.OverrideEditAttrs(func() {
-			res.EditAttrs(res.EditAttrs(), "-StateChangeLogs")
-		})
-	}
 }

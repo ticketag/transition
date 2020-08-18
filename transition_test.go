@@ -8,7 +8,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/qor/qor/test/utils"
-	"github.com/qor/transition"
+	"github.com/ticketag/transition"
 )
 
 type Order struct {
