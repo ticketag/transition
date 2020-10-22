@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/opentracing/opentracing-go"
+	errs "github.com/ticketag/errors"
 	"strings"
 )
 
@@ -153,7 +154,7 @@ func (sm *StateMachine) Trigger(name string, value Stater, ctx context.Context, 
 			return nil
 		}
 	}
-	return fmt.Errorf("failed to perform event %s from state %s", name, stateWas)
+	return errs.NewStateGenericError(fmt.Errorf("failed to perform event %s from state %s", name, stateWas))
 }
 
 // State contains State information, including enter, exit hooks
